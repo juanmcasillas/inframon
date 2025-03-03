@@ -1,0 +1,55 @@
+{% from "bootstrap5/utils.html" import render_messages %}
+{%- extends "base.html" %}
+
+
+{% block title %}{% include 'title.html' %}{%- endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                {{ render_messages() }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="mt-2 p-2">
+                    <h1 class="display-5">Infrastructure Monitor (Inframon)</h1>
+                    <h5 class="" id="track-counter">Node List</h5>
+                    <hr>
+                </div>
+            </div>
+        </div>
+        <div class="row"> 
+            <div class="col-md-2">
+                <div class="d-flex mx-auto" style="height: 100%">
+                    <div class="mx-auto w-100">
+                        <h6 class="mb-2  w-100">Tools</h6>
+                        <div class="ms-2 mt-2">
+                            {% include 'left_bar.html' %}
+                        </div>
+                    </div>
+                    <div class="vr"></div>
+                  </div>
+            </div>
+            <div class="col-md-10 mx-auto">
+                {% block page %}{%- endblock %}
+            </div>  
+            
+        </div>
+        <!---footer -->
+        <hr>
+        <div class="row">
+            <div class="col-md-4 footer">
+                <p class="text-start"><a href="https://github.com/juanmcasillas/inframon">Inframon on Github</a></p>
+            </div>
+            <div class="col-md-4 ">
+                <p class="text-center "></p>
+            </div>
+            <div class="col-md-4 footer">
+                <p class="text-end ">&copy some rights reserved Juan M. Casillas 2025</p>
+            </div>
+        </div>
+    </div>
+{%- endblock %}
+

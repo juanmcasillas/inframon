@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        {% block head %}
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta property="og:description" content="3D test for MapLibre" />
+
+        {% block styles %}
+            <!-- Bootstrap CSS -->
+          
+            {{ bootstrap.load_css() }}
+
+            <!--
+            <link rel="stylesheet" type="text/css" 
+            href="{{ url_for('static', filename='css/maplibre-gl.css') }}">
+            -->
+            <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+
+          
+       
+            <link rel="stylesheet" type="text/css" 
+                href="{{ url_for('static', filename='css/datatables.min.css') }}">
+    
+            <link rel="stylesheet"  type="text/css" 
+                href="{{url_for('static', filename='css/fontawesome.min.css')}}">
+
+            <link rel="stylesheet"  type="text/css" 
+                href="{{url_for('static', filename='css/jquery.rateyo.min.css')}}">
+
+            <link rel="stylesheet"  type="text/css" 
+                href="{{url_for('static', filename='css/brands.min.css')}}">
+                
+            <link rel="stylesheet"  type="text/css" 
+                href="{{url_for('static', filename='css/solid.min.css')}}">
+
+            <link rel="stylesheet"  type="text/css" 
+                href="{{url_for('static', filename='css/sweetalert2.min.css')}}">
+
+            <link rel="stylesheet" type="text/css"
+                href="{{url_for('static', filename='css/app.css')}}">
+
+        {% endblock %}
+
+        {{ bootstrap.load_js() }}
+        <!-- Optional JavaScript -->
+
+        <script type="text/javascript" charset="utf8" 
+            src="{{ url_for('static', filename='js/jquery-3.7.1.min.js') }}"></script>
+
+        <script type="text/javascript" charset="utf8" 
+            src="{{ url_for('static', filename='js/jquery.editable.min.js') }}"></script>
+
+        <script type="text/javascript" charset="utf8" 
+            src="{{ url_for('static', filename='js/jquery.rateyo.min.js') }}"></script>
+
+            
+        <script type="text/javascript" charset="utf8" 
+            src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
+
+        <script type="text/javascript" charset="utf8" 
+            src="{{ url_for('static', filename='js/socket.io.min.js') }}"></script>
+
+        <script type="text/javascript" charset="utf8" 
+            src="{{ url_for('static', filename='js/sweetalert2.all.min.js') }}"></script>
+
+        <script type="text/javascript" charset="utf8" 
+            src="{{ url_for('static', filename='js/nunjucks.min.js') }}"></script>
+   
+        <script type="text/javascript" charset="utf8" 
+            src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+
+        <script type="text/javascript" charset="utf8" 
+            src="{{ url_for('static', filename='js/app/app.js') }}"></script>
+
+    
+
+        <script 
+            src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" 
+            integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" 
+            crossorigin="anonymous" 
+            async></script>            
+        <title>{% block title %}{% endblock %}</title>
+
+        {% endblock %}
+    </head>
+    <body>
+        <!-- Your page content -->
+        <nav>
+            {% include 'nav.html' %}
+        </nav>
+        
+        {% block content %}{% endblock %}
+
+        {% block scripts %}
+        {% endblock %}
+    </body>
+
+    <!-- global things goes here -->
+    <div class="d-flex align-items-center" id="wait-spinning">
+        <img class="mx-auto" src="/static/img/loading-buffering.gif"></img>
+    </div>
+
+
+</html>

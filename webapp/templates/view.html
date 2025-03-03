@@ -1,0 +1,335 @@
+{% from "bootstrap5/utils.html" import render_messages %}
+{%- extends "page2col.html" %}
+
+{%block head%}
+{{super()}}
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript" charset="utf8" 
+                 src="{{ url_for('static', filename='js/app/track_stats.js') }}"></script>
+        <script type="text/javascript" charset="utf8" 
+                 src="{{ url_for('static', filename='js/app/map_manager.js') }}"></script>
+        <script type="text/javascript" charset="utf8" 
+                 src="{{ url_for('static', filename='js/app/map.js') }}"></script>
+        <script type="text/javascript" charset="utf8" 
+                 src="{{ url_for('static', filename='js/rainbowvis.js') }}"></script>                 
+{%endblock%}
+
+{% block title %}{% include 'title.html' %}{%- endblock %}
+{% block page %}
+
+
+<div class="">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="">
+                <span class="track name editable_name" id="{{track.id}}">{{track.name}}</span>
+                    <span class="track score">Score: {{'%3.2f'|format(track.score|float)}}</span>
+                    
+            </div>
+        </div> 
+    </div>
+    <!--data-->
+    <div class="row">
+        <div class="col-md-6">
+            <div id="rateYo_{{track.id}}" class="pt-1 track rating"></div>
+            <div class="ps-2 pt-2 editable_description w-50" 
+                 id="{{track.id}}"
+                 >{% if track.description|length == 0 %}no description yet{% else %}{{track.description}}{% endif %}</div>
+ 
+
+            <div class="container pt-2 text-center">
+                <div class="row">
+                    <div class="col">
+                        <div class="" id="trackstats_distance"></div>
+                        <div id="trackstats_time"></div>
+                    </div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col">
+                    <div id="trackstats_uphill_range_distance"></div>
+                    <div id="trackstats_downhill_range_distance"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                    <div id="trackstats_uphill_range_time"></div>
+                    <div id="trackstats_downhill_range_time"></div>
+                    </div>
+                </div>                
+            </div>
+
+            <div class="">
+                <a class="get-track-link" href="/track/as_original?id={{track.id}}">Download Original</a> | 
+                <a class="get-track-link" href="/track/as_gpx?id={{track.id}}">Download GPX</a> |
+                <a class="get-track-link" href="/track/delete?id={{track.id}}">Delete Track</a> 
+
+                {% if track.similar|length >= 1 %}  
+                <div class="mt-2 mb-4">
+                    <h6><a class="similar-track-link" 
+                        href="/tracks/list?query=similar {{track.id}}">Similar Tracks ({{track.similar|length}})</a>
+                    </h6>
+                </div>
+                {% endif %}
+
+
+
+
+
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                <table class="trackstats">
+                    <tr><td class="header">Distance</td><td><b>{{track.length_3d|humandistance}}</b></td>                        <td class="header">Sport</td><td class=""><b>{{track.kind}}</b></td></tr>
+                    <tr><td class="header">Speed Avg</td><td>{{"%.2f"|format(track.avg_speed_kmh)}} Km/h</td>             <td class="header">Device</td><td class="">{{track.device}}</td></tr>
+                    <tr><td class="header">Duration</td><td>{{track.duration|strftimestamp('%H:%M:%S')}}</td>             <td class="header">Equipment</td><td class="">{{track.equipment}}</td></tr>
+                    <tr><td class="header">Time Moving</td><td>{{track.moving_time|strftimestamp('%H:%M:%S')}}</td>       <td class="header">When</td><td class="">{{track.stamp|strftimestamp}}</td></tr>
+                    <tr><td class="header">Time Stopped</td><td>{{track.stopped_time|strftimedelta}}</td>     <td class="header">Max Altitude</td><td class="">{{track.maximum_elevation|humandistance}}</td></tr>
+                    <tr><td class="header">Elevation</td><td>{{track.uphill_climb|humandistance}}</td>                    <td class="header">Min Altitude</td><td class="">{{track.minimum_elevation|humandistance}}</td></tr>
+                    <tr><td class="header">SCORE</td><td><b>{{'%3.2f'|format(track.score|float)}}</b></td><td></td></tr>
+                    <tr><td class="header">Quality</td><td><b>{{"%.2f"|format(track.quality)}} %</b></td><td></td></tr>
+                    <tr><td>&nbsp;</td><td></td></tr>
+                    <tr><td class="header">Max HR</td><td>{{track.max_heart_rate}} bpm</td>                     <td class="header">Max Power</td><td class="">{{track.max_power}} W</td></tr>
+                    <tr><td class="header">Min HR</td><td>{{track.min_heart_rate}} bpm</td>                            <td class="header">Min Power</td><td class="">{{track.min_power}} W</td></tr>
+                    <tr><td class="header">Avg HR</td><td>{{"%.2f"|format(track.avg_heart_rate)}} bpm</td>             <td class="header">Avg Power</td><td class="">{{"%.2f"|format(track.avg_power)}} W</td></tr>
+                    
+                    <tr><td class="header">Max Cadence</td><td>{{track.max_cadence}} bpm</td>                     <td class="header">Max Temp</td><td class="">{{track.max_temperature}} &deg;C</td></tr>
+                    <tr><td class="header">Min Cadence</td><td>{{track.min_cadence}} bpm</td>                            <td class="header">Min Temp</td><td class="">{{track.min_temperature}} &deg;C</td></tr>
+                    <tr><td class="header">Avg Cadence</td><td>{{"%.2f"|format(track.avg_cadence)}} bpm</td>             <td class="header">Avg Temp</td><td class="">{{"%.2f"|format(track.avg_temperature)}}&deg;C</td></tr>
+                    
+                </table>
+                
+            </div>
+            <div>
+
+                <div class="pt-3">
+                    <img src="{{url_for('static', filename='img/icons/red-up-arrow-icon.png')}}" class="mx-auto track slope-image" ><span class="small">Ascent Avg: <b>{{"%.2f"|format(track.uphill_avg_slope)}} %</b></span>
+                    <table class="trackslope border">
+                    <tr><td>{{"%.2f"|format(track.uphill_p_distance)}} % Distance Total</td>
+                        <td><b>{{track.uphill_distance|humandistance}} Uphill</b></td>
+                        <td><b>{{track.uphill_elevation|humandistance}} Climb</b></td>
+                    </tr>
+                    <tr><td>{{"%.2f"|format(track.uphill_p_time)}} % Time Total</td>
+                        <td>{{"%.2f"|format(track.uphill_speed)}} Km/h</td>
+                        <td>{{track.uphill_time|strftimestamp('%H:%M:%S')}} Uphill</td>
+                    </tr>
+                    </table>
+                </div>
+                    
+                <div class="pt-3">
+                    <img src="{{url_for('static', filename='img/icons/green-down-arrow-icon.png')}}" class="mx-auto track slope-image" ><span class="small">Descend Avg: <b>{{"%.2f"|format(track.uphill_avg_slope)}} %</b></span>                
+                    <table class="trackslope border">
+                        <tr><td>{{"%.2f"|format(track.downhill_p_distance)}} % Distance Total</td>
+                            <td><b>{{track.downhill_distance|humandistance}} Downhill</b></td>
+                            <td><b>{{track.downhill_elevation|humandistance}} Descend</b></td>
+                        </tr>
+                        <tr><td>{{"%.2f"|format(track.downhill_p_time)}} % Time Total</td>
+                            <td>{{"%.2f"|format(track.downhill_speed)}} Km/h</td>
+                            <td>{{track.downhill_time|strftimestamp('%H:%M:%S')}} Downhill</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="pt-3">
+                    <img src="{{url_for('static', filename='img/icons/blue-right-arrow-icon.png')}}" class="mx-auto track slope-image" ><span class="small">Level Avg: <b>{{"%.2f"|format(track.level_avg_slope)}} %</b></span>
+                    <table class="trackslope border">
+                        <tr><td>{{"%.2f"|format(track.level_p_distance)}} % Distance Total</td>
+                            <td><b>{{track.level_distance|humandistance}} Level</b></td>
+                            <td><b>{{track.level_elevation|humandistance}} Climb</b></td>
+                        </tr>
+                        <tr><td>{{"%.2f"|format(track.level_p_time)}} % Time Total</td>
+                            <td>{{"%.2f"|format(track.level_speed)}} Km/h</td>
+                            <td>{{track.level_time|strftimestamp('%H:%M:%S')}} Level</td>
+                        </tr>
+                    </table>
+                </div>
+            
+            
+            </div>
+        </div>
+    </div>
+    <!--map-->
+    <div class="row">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Map</h3>
+            </div>
+        </div>
+        <div class="col-md-12 map-container">
+            <div id="map" class="track-map-2d h-100 d-inline-block">
+                <select id="map-styles" class="map-styles dropdownSelect m-2">
+                    <option selected value="hybrid">Hybrid</option>
+                    <option value="satellite">Satellite</option>
+                    <option value="outdoor">OpenStreetMap (outdoor)</option>
+                    <option value="topo">OpenStreetMap (topo)</option>
+                    <option value="streets-v2">OpenStreetMap</option>
+                  </select>
+                <div class="map-mode-buttons-container">
+                    <button type="button" class="btn btn-light map-button" onclick="mapManager.change()" data-placement="right" data-toggle="tooltip" title="2D/3D"><i class="fa-solid fa-cube"></i></button>
+                    <button type="button" class="btn btn-light map-button" onclick="mapManager.show_hide_contour()" data-placement="right" data-toggle="tooltip" title="Show/Hide Contour lines"><i class="fa-solid fa-mound"></i></button>
+                </div>
+
+                <div class="map-tools-container">
+                    <button type="button" class="btn btn-light map-button" onclick="mapManager.recenter()" data-placement="right" data-toggle="tooltip" title="Recenter"><i class="fa-solid fa-down-left-and-up-right-to-center"></i></button>
+                    <button type="button" class="btn btn-light map-button" onclick="mapManager.fly_track()" data-placement="right" data-toggle="tooltip" title="Fly Track"><i class="fa-solid fa-video"></i></button>
+                </div>
+
+                <div class="catastro-buttons-container">
+                    <button type="button" class="btn btn-light map-button" onclick="mapManager.toogle_catastro_point(this)" data-placement="right" data-toggle="tooltip" title="Check Catastro (Point)"><i class="fa-solid fa-check"></i></button>
+                    <button type="button" class="btn btn-light map-button" onclick="mapManager.check_catastro_track()" data-placement="right" data-toggle="tooltip" title="Check Catastro (Track)"><i class="fa-solid fa-check-double"></i></button>
+                </div>
+
+                <div class="places-buttons-container">
+                    <button type="button" class="btn btn-light map-button" onclick="mapManager.show_hide_states()" data-placement="right" data-toggle="tooltip" title="Show/Hide State boundaries"><i class="fa-solid fa-city"></i></button>
+                    <button type="button" class="btn btn-light map-button" onclick="mapManager.show_hide_cities()" data-placement="right" data-toggle="tooltip" title="Show/Hide City boundaries"><i class="fa-solid fa-building"></i></button>
+                    
+                    <div class="places-list mt-2 pe-2">
+                    {% for place in places_layers %}
+                        <input class="m-2" type="checkbox" name="category" value="{{place}}" onclick="mapManager.filter_places(this)"> {{place}}</input></br>
+                    {% endfor %}
+                    </div>
+                </div>
+
+               
+                  
+               
+                <pre id="map-info" class="map-info"></pre>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12 series-container mt-4">
+            <ul class="nav nav-tabs" id="" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="elevation-button-id" data-bs-toggle="tab" data-bs-target="#elevation-tab-id" type="button" role="tab" aria-controls="elevation" aria-selected="true">Elevation</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="heart_rate-button-id" data-bs-toggle="tab" data-bs-target="#heart_rate-tab-id" type="button" role="tab" aria-controls="heart_rate" aria-selected="false">Heart Rate</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="power-button-id" data-bs-toggle="tab" data-bs-target="#power-tab-id" type="button" role="tab" aria-controls="power" aria-selected="false">Power</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="cadence-button-id" data-bs-toggle="tab" data-bs-target="#cadence-tab-id" type="button" role="tab" aria-controls="cadence" aria-selected="false">Cadence</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="temperature-button-id" data-bs-toggle="tab" data-bs-target="#temperature-tab-id" type="button" role="tab" aria-controls="temperature" aria-selected="false">Temperature</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="elevation-tab-id" role="tabpanel" aria-labelledby="elevation-tab">
+                    <div id="elevation_chart"  onmouseleave="mapManager.marker_off()"></div>
+                </div>
+                <div class="tab-pane fade" id="heart_rate-tab-id" role="tabpanel" aria-labelledby="heart_rate-tab">
+                    <div id="heart_rate_chart"  onmouseleave="mapManager.marker_off()"></div>
+                </div>
+                <div class="tab-pane fade" id="power-tab-id" role="tabpanel" aria-labelledby="power-tab">
+                    <div id="power_chart"  onmouseleave="mapManager.marker_off()"></div>
+                </div>
+                <div class="tab-pane fade" id="cadence-tab-id" role="tabpanel" aria-labelledby="cadence-tab">
+                    <div id="cadence_chart"  onmouseleave="mapManager.marker_off()"></div>
+                </div>
+                <div class="tab-pane fade" id="temperature-tab-id" role="tabpanel" aria-labelledby="temperature-tab">
+                    <div id="temperature_chart"  onmouseleave="mapManager.marker_off()"></div>
+                </div>
+            </div>
+    </div>
+</div>
+
+<script>
+    $("#rateYo_{{track.id}}").rateYo({
+        starWidth: "18px",
+        //readOnly: true,
+        rating: {{track.rating}},
+        userData: {{track.id}}, 
+        fullStar: true,
+        onSet: function (rating, rateYoInstance) {
+            var id = rateYoInstance.option("userData");
+            UpdateTrackRating(id, rating);
+        }
+    });
+
+
+    // see http://www.appelsiini.net/projects/jeditable
+    $(".editable_name").editable("/track/edit/name", {
+        indicator : "<img src='{{url_for('static', filename='img/indicator.gif')}}'>",
+        name : 'name',
+        type   : 'textarea',
+        rows : 4,
+        submitdata: { _method: "put" },
+        select : false,
+        submit : 'Ok',
+        cancel : 'Cancel',
+        //cssclass : "track-description-editable",
+        tooltip : "Click to edit..."
+    });
+
+    $(".editable_description").editable("/track/edit/description", {
+        indicator : "<img src='{{url_for('static', filename='img/indicator.gif')}}'>",
+        name : 'description',
+        type   : 'textarea',
+        rows : 4,
+        submitdata: { _method: "put" },
+        select : false,
+        submit : 'Ok',
+        cancel : 'Cancel',
+        //cssclass : "track-description-editable",
+        tooltip : "Click to edit..."
+    });
+
+
+    // create the track stats, and build them
+    track = new Object();
+    track.id                  = {{track.id}}
+    track.uphill_p_distance   = {{track.uphill_p_distance}}
+    track.level_p_distance    = {{track.level_p_distance}} 
+    track.downhill_p_distance = {{track.downhill_p_distance}} 
+    track.uphill_p_time       = {{track.uphill_p_time}} 
+    track.level_p_time        = {{track.level_p_time}}
+    track.downhill_p_time     = {{track.downhill_p_time}} 
+
+    track.uphill_slope_range_distance_0 = {{track.uphill_slope_range_distance_0}}
+    track.uphill_slope_range_distance_1 = {{track.uphill_slope_range_distance_1}}
+    track.uphill_slope_range_distance_2 = {{track.uphill_slope_range_distance_2}}
+    track.uphill_slope_range_distance_3 = {{track.uphill_slope_range_distance_3}}
+    track.uphill_slope_range_distance_4 = {{track.uphill_slope_range_distance_4}}
+    track.uphill_slope_range_distance_5 = {{track.uphill_slope_range_distance_5}}
+    track.uphill_slope_range_distance_6 = {{track.uphill_slope_range_distance_6}}
+    
+    track.downhill_slope_range_distance_0 = {{track.downhill_slope_range_distance_0}}
+    track.downhill_slope_range_distance_1 = {{track.downhill_slope_range_distance_1}}
+    track.downhill_slope_range_distance_2 = {{track.downhill_slope_range_distance_2}}
+    track.downhill_slope_range_distance_3 = {{track.downhill_slope_range_distance_3}}
+    track.downhill_slope_range_distance_4 = {{track.downhill_slope_range_distance_4}}
+    track.downhill_slope_range_distance_5 = {{track.downhill_slope_range_distance_5}}
+    track.downhill_slope_range_distance_6 = {{track.downhill_slope_range_distance_6}}    
+    
+    track.bounds = [ [ {{track.min_long}}, {{track.min_lat}} ],[ {{track.max_long}}, {{track.max_lat}} ]  ]
+    track.center = new Object();
+    track.begin = new Object();
+    track.end = new Object();
+
+    track.center.long = {{track.middle_long}} 
+    track.center.lat = {{track.middle_lat}} 
+    track.center.elev = {{track.middle_elev}} 
+    
+    track.begin.long = {{track.begin_long}} 
+    track.begin.lat = {{track.begin_lat}} 
+    track.begin.elev = {{track.begin_elev}} 
+    
+    track.end.long = {{track.end_long}} 
+    track.end.lat = {{track.end_lat}} 
+    track.end.elev = {{track.end_elev}}     
+
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(function(){ 
+        drawTrackStats(track) 
+        // called from map in order to work plotElevation(window.map)
+    })
+    draw_map(track, '{{TOKENS.MAPTILER_KEY}}', "map-styles", {{places_layers|safe}})
+    
+    
+</script>
+
+{%- endblock %}

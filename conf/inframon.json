@@ -1,0 +1,73 @@
+{
+    "verbose": true,
+    "logs": {
+        "level": "INFO",
+        "format": "[%(asctime)s] %(levelname)s in %(module)s:%(funcName)s:%(lineno)d: %(message)s",
+        "app": "logs/inframon.log"
+    },
+    "scheduler": {
+        "sleep": 5000
+    },
+    "queries": {
+        "default": "select * from nodes"
+    },
+    "checks": [
+        {
+            "type": "ping",
+            "module": "inframon\\checks\\ping.py",
+            "config": {
+                "delay": "1000",
+                "timeout": 2,
+                "units": "ms",
+                "count": 5
+            },
+            "map_attributes": [
+                 [ "macaddr", "mac" ],
+                 [ "status", "status" ]
+                
+            ],
+            "levels": {
+            }
+        }
+    ],
+    "nodes": [
+        {
+            "enabled": true,
+            "name": "internet gateway",
+            "ip": "172.30.92.100",
+            "description": "router to connect with internet and DHCSERVER",
+            "urls": [
+                {
+                    "management": "http://192.168.1.1/management"
+                },
+                {
+                    "xxx": "http://192.168.1.1/xxx"
+                }
+            ],
+            "checks": {
+                "ping": {
+                    "config": {
+                        "timeout": 1,
+                        "units": "ms"
+                    }
+                }
+            }
+        },
+        {
+            "enabled": true,
+            "name": "AP salon",
+            "ip": "192.168.1.2",
+            "description": "AP in salon (TPLINK",
+            "urls": [
+                {
+                    "management": "http://192.168.1.2"
+                }
+            ],
+            "checks": {
+                "ping": {}
+            }
+        }
+
+    ]
+    
+}

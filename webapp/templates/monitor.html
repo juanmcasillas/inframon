@@ -1,0 +1,191 @@
+{% from "bootstrap5/utils.html" import render_messages %}
+{%- extends "page3col.html" %}
+
+{%block head%}
+{{super()}}
+        
+
+{%endblock%}
+
+{% block title %}{% include 'title.html' %}{%- endblock %}
+{% block page %}
+<div>
+Reload: <span id="reloadstamp">-</span>
+</div>
+
+<div id="more_info" class="d-none">
+    <table id="data_check" class="table table-striped" style="width: 100%">
+        <thead>
+            <tr>
+            <th><b>Name</b></th>
+            <th><b>Avg (ms)</b></th>
+            <th><b>Packets</b></th>
+            <th><b>Good</b></th>
+            <th><b>Percent</b></th>
+            <th><b>Status</b></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <div>
+        <input type="button" onClick="$('#more_info').addClass('d-none');" value="Hide"></input>
+    </div>
+</div>
+
+
+<table id="data" class="table table-striped" style="width: 100%">
+    <thead>
+        <tr>
+        <!--<th></th>-->
+        <th>ID</th>
+        <th>Name</th>
+        <th>IP Address</th>
+        <th>Mac Address</th>
+        <th>Description</th>
+        <th>Last Modified</th>
+        <th>Status</th>
+        <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+    </table>
+
+{%- endblock %}
+
+
+{% block scripts %}
+  {{super()}}
+  <script>
+        
+    $(document).ready(function () {
+      table = $('#data').DataTable({
+        ajax: {
+            url: '/nodes/query',
+            dataSrc: 'nodes'
+        },
+         columns: [
+             //{ data: null, defaultContent : '' },
+             { data: 'id' },
+             { data: 'name' },
+             { data: 'ip' },
+             { data: 'mac' },
+             { data: 'description' },
+             { data: 'lastmodified' },
+             { data: 'status' },
+             {   data: null, 
+                render: function ( data, type, full, meta ) {
+                     var id = full.id;
+                     var urls = full.urls;
+                     cmds = ""
+                     for (const url of urls) { 
+                        for (const [key, value] of Object.entries(url)) {
+                         cmds += `<a href="${value}"><i class="fa-solid fa-link" title="${key}"></i></a>`;
+                        }
+                      }
+                     return cmds
+                 }
+            }
+ 
+        ],
+        lengthMenu: [10, 25, 50, 100, 200, { label: 'All', value: -1 }],
+        pageLength: 100,
+        colReorder: true,
+        dom: 'fBrRitil',
+        select: false,
+        buttons: [
+        'copy', 'excel', 'pdf', 'csv', 'print', 'colvis'
+        ],
+        pagingType: "full_numbers",
+        columnDefs: [
+            //{ target: 0, visible: true, className: 'select-checkbox', orderable: false},
+            //{ target: 1, visible: false},
+            //{ target: 5, visible: false},
+            //{ target: 9, visible: false}
+        ],
+    
+        rowCallback: function( row, data ) {
+      
+            switch (data.status) {
+                case 0:    
+                    $(row).addClass('status-unknown');
+                    break
+                case 1:
+                    $(row).addClass('status-alive');
+                    break
+                case 2:    
+                    $(row).addClass('status-fail');
+                    break
+            }
+        }
+      })
+
+      $('#data tbody').on('click', 'tr', function () {
+            let data = table.row(this).data();
+            id = data.id
+            show_more_info(data)
+            //window.location.href =  `/node/detail/${id}`
+     });
+        
+      
+     // data check
+
+    table_check = $('#data_check').DataTable({
+        dom: 'Rt',
+        select: false,
+        
+        columnDefs: [
+            //{ target: 0, visible: true, className: 'select-checkbox', orderable: false},
+            //{ target: 1, visible: false},
+            //{ target: 5, visible: false},
+            //{ target: 9, visible: false}
+        ],
+
+        rowCallback: function( row, data, index ) {
+            switch (data[5]) {
+                case 0:    
+                    $(row).addClass('status-unknown');
+                    break
+                case 1:
+                    $(row).addClass('status-alive');
+                    break
+                case 2:    
+                    $(row).addClass('status-fail');
+                    break
+            }
+        }
+    })
+     //
+
+    setInterval(function () {
+        table.ajax.reload(null, false); // user paging is not reset on reload
+        $('#reloadstamp').html(moment().format('DD/MM/YYYY HH:mm:ss'));
+
+
+      }, {{scheduler.sleep}}); // each second
+
+    });
+
+
+  function show_more_info(node_data) {
+    $('#more_info').removeClass("d-none")
+    //console.log(node_data)
+    table_check.clear()
+    for (const [name, check] of Object.entries(node_data.checks)) {
+        var val = (check.good*100.0/check.count).toFixed(2)
+        table_check.row
+        .add([
+            name, 
+            check.avg.toFixed(2),
+            check.count,
+            check.good,
+            `${val} %`,
+            check.status
+        ]).draw()
+    }
+    
+  }
+  </script>
+{% endblock %}

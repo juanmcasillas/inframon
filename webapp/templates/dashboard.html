@@ -1,0 +1,68 @@
+{% from "bootstrap5/utils.html" import render_messages %}
+{%- extends "page2col.html" %}
+
+{%block head%}
+{{super()}}
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript" charset="utf8" 
+                 src="{{ url_for('static', filename='js/app/app_stats.js') }}"></script>
+
+
+{%endblock%}
+
+{% block title %}{% include 'title.html' %}{%- endblock %}
+{% block page %}
+
+
+<div class="">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="">
+                <h1>Dashboard</H1>
+            </div>
+        </div> 
+    </div>
+    <!--data-->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="">
+                <div id="">
+                    <span>Total tracks: </span><span>{{stats.number_of_tracks}}</span><br>
+                    <span>Total Distance: </span><span>{{stats.total_length_2d|humandistance}}</span><br>
+                    <span>Total Ascent: </span><span>{{stats.total_uphill_climb|humandistance}}</span><br>
+                </div>
+
+                <br/><br/><H2>Year Tendency</H2>
+                <div id="year_tendency_chart_div"></div>
+                <br/><br/><H2>Stats by Sport</H2>
+                <div id="">
+                    <div id="distance_by_kind_chart_div" class="appstats_item"></div>
+                    <div id="elevation_by_kind_chart_div" class="appstats_item"></div>
+                    <div id="number_by_kind_chart_div" class="appstats_item"></div>
+                </div>
+            
+                <br/><br/><H2>Stats by Equipment</H2>
+                <div id="">
+                    <div id="distance_by_equipment_chart_div" class="appstats_item"></div>
+                    <div id="elevation_by_equipment_chart_div" class="appstats_item"></div>
+                    <div id="number_by_equipment_chart_div" class="appstats_item"></div>
+                </div>
+
+                <br/><br/><H2>Choose By Year <select id="comboelevation" onChange="draw_by_year(this);"></select></H2>
+    
+                <br/><br/><H2>Elevation by Sport/Equipment</H2>
+                <div id="elevation_by_sport_by_year_container_div"></div>
+            
+                <br/><br/><H2>Distance by Sport/Equipment</H2>
+                <div id="distance_by_sport_by_year_container_div"></div>
+
+            </div>
+        </div> 
+    </div>
+</div>
+
+<script>
+    stats = {{stats_json|safe}}
+    drawAppStats()
+</script>
+{%- endblock %}

@@ -1,0 +1,197 @@
+.jumbotron {
+  margin-top: 1em;  // add a little space
+}
+
+body { 
+
+    margin: 0; 
+    padding: 0; 
+}
+
+html, body, #map { 
+    height: 100%; 
+}
+
+/* fix styles  */
+
+.status-unknown {
+    background-color: orange !important;
+    color: white;
+}
+
+.status-alive {
+    background-color: lightgreen !important;
+    color: white;
+}
+
+.status-fail {
+    background-color: red !important;
+    color: white;
+}
+  
+.status-ping-fail {
+    background-color: darkmagenta !important;
+    color: white;
+}
+
+
+.node.date {
+    font-size: small;
+    font-style: italic;
+    display: block;
+}
+.node.name {
+    font-size: larger;
+    font-weight: bold;
+    display: block;
+}
+.node.name a  {
+    color: black;
+}
+
+.node.name a:link {
+    text-decoration:none;
+}
+
+.node.name a:visited {
+	text-decoration:none;
+}
+
+.node.name a:hover {
+	text-decoration:underline;
+}
+
+
+.node.length {
+    display: block;
+}
+.node.score {
+    font-size: large;
+    font-weight: bold;
+    display: block;
+    color: rgb(179, 38, 38);
+}
+
+.node.description {
+    font-size: small;
+    font-style: italic;
+}
+
+.node.data {
+    display: block;
+    font-size: small;
+    
+}
+
+
+.footer {
+    font-size: smaller;
+}
+
+.footer a{
+    text-decoration: none;
+    color: black;
+}
+
+.footer a:hover {
+	text-decoration:underline;
+}
+
+
+
+.editable_title :hover {
+    cursor: pointer;
+
+}
+
+.editable_description {
+    font-size: small;
+    font-style: italic;
+    
+}
+
+
+.editable_description :hover {
+    cursor: pointer;
+
+}
+
+
+
+a.get-track-link:visited  {
+    color: black;
+    font-size: small;
+    text-decoration: none;
+}
+
+ a.get-track-link:link  {
+    color: black;
+    font-size: small;
+    text-decoration: none;
+}
+
+a.get-track-link:hover  {
+	text-decoration:underline;
+}
+
+.appstats_item_big {
+    border: 2px red solid;
+
+
+}
+
+.appstats_item {
+    width: 350px;
+    height: 200px;
+    display: inline-block;
+}
+
+
+.tool-item {
+    display: block;
+}
+
+a.tool-item:visited {
+    color: black;
+    font-size: small;
+    text-decoration: none;
+}
+
+a.tool-item:link  {
+    color: black;
+    font-size: small;
+    text-decoration: none;
+}
+
+a.tool-item:hover  {
+	text-decoration:underline;
+}
+
+#wait-spinning {
+    visibility: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; overflow: hidden;
+    opacity: 0.45;
+    background-color: white;
+}
+
+
+
+a.pagination-link:visited  {
+    color: darkgrey;
+    font-size: 0.8em;
+    text-decoration: none;
+}
+
+ a.pagination-link:link  {
+    color: darkgrey;
+    font-size: 0.8em;
+    text-decoration: none;
+}
+
+a.pagination-link:hover  {
+	text-decoration:underline;
+}

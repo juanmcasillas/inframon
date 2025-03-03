@@ -1,0 +1,54 @@
+{% from 'bootstrap5/nav.html' import render_nav_item %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/"><i class="fa-solid fa-house"></i> Home</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        
+        <ul class="navbar-nav me-auto">
+            
+            <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-rectangle-list"></i> Monitor
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="/monitor.html"><i class="fa-solid fa-network-wired me-1"></i>Monitor</a></li>
+              <li><a class="dropdown-item" href="/dashboard.html"><i class="fa-solid fa-chart-simple me-1"></i>Dashboard</a></li>
+              <li><a class="dropdown-item" href="/utils.html"><i class="fa-solid fa-chart-simple me-1"></i>Utils</a></li>
+              <!--<li><hr class="dropdown-divider"></li>-->
+              <!--<li><a target="_blank" class="dropdown-item" href="/xx"><i class="fa-solid fa-file-waveform"></i> xxx</a></li>-->
+            </ul>
+          </li>
+        </ul>
+        <div id="form-search" class="d-flex w-75" method="POST" action="#">
+            <input id="search-field" class="form-control me-2 " type="search" placeholder="Search" aria-label="Search" name="query">
+            <button class="btn btn-outline-success" type="button" onclick="run_search('form-search')">Search</button>
+         </div>
+      </div>
+    </div>
+  </nav>
+
+<script>
+function run_search(form_id) {
+    var query = $(`#${form_id}`).children('input').first()
+    query = query[0].value
+    if (query !== undefined && query != "") {
+        load_nodes(query)
+        return true;
+    }
+    return false;
+}
+
+var query = $('#form-search').children('input').first()[0]
+query.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        var button = $('#form-search').children('button').first()[0]
+        button.click()
+    }
+});
+
+</script>

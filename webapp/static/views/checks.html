@@ -1,0 +1,22 @@
+<h3>Checks</h3>
+
+<table width="100%">
+    <tr>
+        <th><b>Name</b></th>
+        <th><b>Avg (ms)</b></th>
+        <th><b>Packets</b></th>
+        <th><b>Good</b></th>
+        <th><b>Percent</b></th>
+        <th><b>Status</b></th>
+    </tr>
+{% for name, check in checks %}
+    <tr>
+        <td>{{name}}</td>
+        <td>{{'%3.2f'|format_float(check.avg|float)}}</td>
+        <td>{{check.count}}</td>
+        <td>{{check.good}}</td>
+        <td>{{'%3.2f'|format_float(check.good*100.0/check.count|float)}} %</td>
+        <td>{{check.status|map_status}}</td>
+    </tr>
+{% endfor %}
+</table>
