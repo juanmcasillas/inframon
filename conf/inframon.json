@@ -6,26 +6,44 @@
         "app": "logs/inframon.log"
     },
     "scheduler": {
-        "sleep": 5000
+        "refresh": 5000,
+        "run_checks": 2000
     },
     "queries": {
         "default": "select * from nodes"
     },
+    "metrics": [
+        {
+            "uptime": "up time",
+            "free_memory": "free memory",
+            "free_space": "free_space"
+        }
+    ],
     "checks": [
         {
-            "type": "ping",
-            "module": "inframon\\checks\\ping.py",
+            "type": "icmp",
+            "module": "inframon\\checks\\icmp.py",
             "config": {
                 "delay": "1000",
-                "timeout": 2,
+                "timeout": 0.8,
                 "units": "ms",
-                "count": 5
+                "count": 3
             },
             "map_attributes": [
-                 [ "macaddr", "mac" ],
-                 [ "status", "status" ]
-                
+                 [ "macaddr", "mac" ]
             ],
+            "levels": {
+            }
+        },
+        {
+            "type": "http",
+            "module": "inframon\\checks\\http.py",
+            "config": {
+                "delay": "1000",
+                "timeout": 0.8,
+                "units": "ms",
+                "count": 3
+            },
             "levels": {
             }
         }
@@ -45,7 +63,7 @@
                 }
             ],
             "checks": {
-                "ping": {
+                "icmp": {
                     "config": {
                         "timeout": 1,
                         "units": "ms"
@@ -55,16 +73,46 @@
         },
         {
             "enabled": true,
+            "name": "another machine",
+            "ip": "172.30.10.12",
+            "description": "another machine to work",
+            "urls": [
+                {
+                    "management": "http://192.168.1.1/management"
+                },
+                {
+                    "xxx": "http://192.168.1.1/xxx"
+                }
+            ],
+            "checks": {
+                "icmp": {
+                    "config": {
+                        "timeout": 1,
+                        "units": "ms"
+                    }
+                },
+                "http": {
+                    "config": {
+                        "url": "http://localhost:5000/",
+                        "timeout": 1,
+                        "units": "ms"
+                    }
+                }
+
+            }
+        },
+        {
+            "enabled": true,
             "name": "AP salon",
             "ip": "192.168.1.2",
-            "description": "AP in salon (TPLINK",
+            "description": "AP in salon (TPLINK)",
             "urls": [
                 {
                     "management": "http://192.168.1.2"
                 }
             ],
             "checks": {
-                "ping": {}
+                "icmp": {}
             }
         }
 

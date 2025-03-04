@@ -44,7 +44,8 @@ class Manager:
 
         self.checks = {}
         self.nodes = {}
-        self.sleep = 10
+        self.refresh = 5000
+        self.run_checks = 20000
         self.run_state = False
 
     def startup(self):
@@ -155,12 +156,13 @@ class Manager:
         sql = "delete from node_checks where node_id = ? and check_id = ?"
         cursor = self.db.cursor()
         cursor.execute(sql, (node['id'], self.checks[check]['id']))
+        self.db.commit()
+
         sql = "insert into node_checks(node_id, check_id, result, stamp) values ( ?, ?, ?, CURRENT_TIMESTAMP );"
         cursor = self.db.cursor()
         cursor.execute(sql, (node['id'],
                              self.checks[check]['id'], 
                              json.dumps(result)))
-        node['id'] = cursor.lastrowid
         sql = "update nodes set lastmodified = CURRENT_TIMESTAMP where id = ?;"
         cursor.execute(sql, (node['id'],))
         self.db.commit()
@@ -232,7 +234,8 @@ class Manager:
     ## working methods
 
     def load_scheduler(self):
-        self.sleep = self.config.scheduler['sleep']
+        self.refresh = float(self.config.scheduler['refresh'])
+        self.run_checks = float(self.config.scheduler['run_checks'])
 
     def load_checks(self):
         for c in self.config.checks:
@@ -250,14 +253,15 @@ class Manager:
             
     def init_nodes(self):
         for n in self.config.nodes:
-            n['status'] = NODESTATUS.NUM[NODESTATUS.UNKNOWN]
+            n['status'] = NODESTATUS.UNKNOWN
             self.insert_node_db(n)
             self.nodes[n['id']] = n
 
 
     def show(self):
         print("Scheduler")
-        print(" - sleep: %3.3f ms" % self.sleep)
+        print(" - refresh (ui): %3.3f ms" % self.refresh)
+        print(" - run_checks: %3.3f ms" % self.run_checks)
         print("Checks")
         for c in self.checks.keys():
             print(" - %s Config: %s" % (c,self.checks[c]))
@@ -285,6 +289,9 @@ class Manager:
             if not enabled:
                 continue
 
+            node_state = NODESTATUS.UNKNOWN
+            changed = 0
+            
             for check in node['checks'].keys():
                 if not check in self.checks:
                     raise ValueError("check '%s' is not implemented" % check)
@@ -297,6 +304,16 @@ class Manager:
                 self.insert_result_db(node, check, ret)
                 self.process_results(node, check, ret)
                 #node['checks'][check]['data'] = ret
+                if ret['status'] != NODESTATUS.ALIVE:
+                    node_state = NODESTATUS.FAIL
+                    changed += 1
+            # update node state.
+            if changed == 0:
+                node_state = NODESTATUS.ALIVE
+            else:
+                pass
+            self.update_node_field_db(node['id'], 'status',  node_state)
+
 
     def run_once_wrapper(self):
         self.run_once()
@@ -306,9 +323,12 @@ class Manager:
         while self.run_state:
             try:
                 self.run_once_wrapper()
-                time.sleep(self.sleep * (1/1000.0))
+                time.sleep(self.run_checks * (1/1000.0))
             except KeyboardInterrupt:
                 return
+            except Exception as e:
+                print("run_forever_wrapper: %s" % e)
+                sys.exit(0)
 
 
     def run(self, detached=False, forever=False):

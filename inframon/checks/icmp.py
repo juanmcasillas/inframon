@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # /////////////////////////////////////////////////////////////////////////////
 # //
-# // ping.py 
+# // icmp.py 
 # //
 # // implement the ping check
 # //
@@ -24,7 +24,7 @@ from inframon.literals import *
 
 class Check(CheckBase):
     def __init__(self, config, plugin_config):
-        super().__init__("ping", config, plugin_config)
+        super().__init__("icmp", config, plugin_config)
             
     # run the test, and get some data.
 
@@ -46,20 +46,20 @@ class Check(CheckBase):
             'count': int(cfg["count"]),
             'macaddr': None,
             'good': 0,
-            'status': NODESTATUS.NUM[NODESTATUS.ALIVE]
+            'status': NODESTATUS.ALIVE
         }
 
         ip = node['ip']
         try:
             ip_addr = socket.gethostbyname(ip)
         except Exception as e:
-            results['status'] = NODESTATUS.NUM[NODESTATUS.UNKNOWN]
+            results['status'] = NODESTATUS.UNKNOWN
             return results
 
         try:    
             macaddr  = getmacbyip(ip_addr)
         except Exception as e:
-            results['status'] = NODESTATUS.NUM[NODESTATUS.UNKNOWN]
+            results['status'] = NODESTATUS.UNKNOWN
             return results
 
     
@@ -78,14 +78,15 @@ class Check(CheckBase):
             except ping3.errors.Timeout as e:
                 results['timeout'] += 1
             except ping3.errors.HostUnknown as e:
-                results['ttlexp'] += 1
+                results['unknown'] += 1
             except ping3.errors.TimeToLiveExpired as e:
-                results['avg'] += 1
+                results['ttlexp'] += 1
+                
 
         results['avg'] = results['avg'] / int(results["count"])
 
         if results['good'] != results["count"]:
-            results['status'] = NODESTATUS.NUM[NODESTATUS.FAIL]
+            results['status'] = NODESTATUS.FAIL
 
         # rtt may be 0.0 (ms)
         return results

@@ -24,11 +24,5 @@ class NODESTATUS:
     ALIVE       = "ALIVE"   
     FAIL        = "FAIL"    
 
-    NUM = {
-        UNKNOWN: 0,
-        ALIVE:   1,
-        FAIL:    2
-    }
-
     def __init__(self):
         pass

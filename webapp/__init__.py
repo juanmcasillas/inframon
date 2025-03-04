@@ -62,7 +62,7 @@ def create_app(configfile=None):
     app.manager.logger = app.logger
     app.manager.startup()
     # dont run on tests
-    app.manager.run(detached=True)
+    app.manager.run(detached=True, forever=True)
     # app.manager.run_forever(dettached=True)
    
     cache.init_app(app)

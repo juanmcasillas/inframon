@@ -12,6 +12,13 @@ html, body, #map {
     height: 100%; 
 }
 
+.style-row-disabled {
+    background-color: grey !important;
+    color: darkslategrey;
+    font-style: italic;
+}
+
+
 /* fix styles  */
 
 .status-unknown {
@@ -29,7 +36,7 @@ html, body, #map {
     color: white;
 }
   
-.status-ping-fail {
+.status-icmp-fail {
     background-color: darkmagenta !important;
     color: white;
 }
