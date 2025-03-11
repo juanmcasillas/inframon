@@ -1,0 +1,1 @@
+ C:\Python312\Scripts\waitress-serve --host 0.0.0.0 --port=5000 --call "webapp:create_app"
